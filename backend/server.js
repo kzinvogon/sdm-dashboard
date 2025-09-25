@@ -111,7 +111,7 @@ app.get('/api/projects', async (req, res) => {
 });
 
 // Get dashboard KPIs
-app.get('/api/dashboard/kpis', async (req, res) => {
+app.get('/api/kpis', async (req, res) => {
   try {
     const [bids, experts, projects] = await Promise.all([
       Bid.find({}),
