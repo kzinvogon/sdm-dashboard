@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Export Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; background: #4F46E5; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #3730A3; }
+    </style>
+</head>
+<body>
+    <h1>CSV Export Test</h1>
+    <p>Click the button below to test CSV export functionality:</p>
+    
+    <button onclick="testCSVExport()">Test CSV Export</button>
+    
+    <script>
+        // CSV Export utility (same as in the dashboard)
+        const exportToCSV = (data, filename) => {
+            if (!data || data.length === 0) {
+                alert('No data to export');
+                return;
+            }
+
+            // Get headers from the first row
+            const headers = Object.keys(data[0]);
+            
+            // Create CSV content
+            const csvContent = [
+                // Headers
+                headers.join(','),
+                // Data rows
+                ...data.map(row => 
+                    headers.map(header => {
+                        const value = row[header];
+                        // Handle values that might contain commas or quotes
+                        if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
+                            return `"${value.replace(/"/g, '""')}"`;
+                        }
+                        return value || '';
+                    }).join(',')
+                )
+            ].join('\n');
+
+            // Create and download file
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${filename}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        function testCSVExport() {
+            // Test data similar to what the dashboard would export
+            const testData = [
+                {
+                    id: 'BR-1001',
+                    customer: 'Acme Corp',
+                    title: 'Tech Project',
+                    stage: 'Bidding',
+                    responses: 3,
+                    invites_sent: 5,
+                    close_at: '2024-01-15',
+                    best_price: 5000,
+                    best_score: 85
+                },
+                {
+                    id: 'BR-1002',
+                    customer: 'Global Inc',
+                    title: 'Training Project',
+                    stage: 'New',
+                    responses: 0,
+                    invites_sent: 2,
+                    close_at: '2024-01-20',
+                    best_price: 3000,
+                    best_score: 0
+                },
+                {
+                    id: 'BR-1003',
+                    customer: 'Startup Co',
+                    title: 'Consulting, Analysis & Implementation',
+                    stage: 'Clarification',
+                    responses: 2,
+                    invites_sent: 4,
+                    close_at: '2024-01-18',
+                    best_price: 7500,
+                    best_score: 92
+                }
+            ];
+
+            exportToCSV(testData, 'test-bids-export');
+            alert('CSV export test completed! Check your downloads folder for "test-bids-export.csv"');
+        }
+    </script>
+</body>
+</html>
+
